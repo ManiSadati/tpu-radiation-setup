@@ -1,0 +1,22 @@
+#SERVER_HEADER --model vit_base_8_edgetpu.tflite -n 32 --vit
+#SERVER_BEGIN Y:2024 M:7 D:21 TIME:14:32:22-828650
+#LOGFILE /var/radiation-benchmarks/log/2024_07_21_21_32_22_TensorFlow-vit_base_8_edgetpu_ECC_OFF_rasp4-coral.log
+#HEADER framework:TensorFlow framework_version:2.10.0 Device:EdgeTPUiterations=1000000000000 testsamples=32 generate=False enableconsolelog=False model=/home/carol/tpu-rad/models/vit_base_8_edgetpu.tflite tokens=None input=/home/carol/tpu-rad/inputs/vit_base_8_images.npy golden=/home/carol/tpu-rad/golden/vit_base_8_golden.npy reload=False vit=True log_interval=10
+#BEGIN Y:2024 M:07 D:21 Time:21:32:22
+#INF PERF loaded_object:model load_time:3.1531s
+#INF PERF loaded_object:data load_time:0.0793s
+#IT 0 KerTime:0.1242968 AccTime:0.1242968
+#IT 10 KerTime:0.1011652 AccTime:1.1240745
+#IT 20 KerTime:0.0996563 AccTime:2.1280954
+#IT 30 KerTime:0.1013473 AccTime:3.1341426
+#IT 40 KerTime:0.0991583 AccTime:4.1345284
+#IT 50 KerTime:0.1017547 AccTime:5.1422825
+#IT 60 KerTime:0.0996831 AccTime:6.1444364
+#IT 70 KerTime:0.1018392 AccTime:7.1500450
+#IT 80 KerTime:0.0992162 AccTime:8.1510078
+#IT 90 KerTime:0.1017059 AccTime:9.1601754
+#IT 100 KerTime:0.0993827 AccTime:10.1630549
+#IT 110 KerTime:0.1012963 AccTime:11.1680836
+#IT 120 KerTime:0.1001844 AccTime:12.1709695
+#IT 130 KerTime:0.1020726 AccTime:13.1803766
+#IT 140 KerTime:0.0992632 AccTime:14.1838281

@@ -1,0 +1,5 @@
+#SERVER_HEADER --model vit_base_8_edgetpu.tflite -n 32 --vit
+#SERVER_BEGIN Y:2024 M:7 D:19 TIME:18:5:36-845283
+#IT 980 KerTime:0.0989862 AccTime:97.6834188
+#IT 990 KerTime:0.1014329 AccTime:98.6767813
+#IT 1000 KerTime:0.1012070 AccTime:99.6768973
