@@ -6,9 +6,6 @@ import csv
 import statistics
 import numpy as np
 
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-
 
 parser = argparse.ArgumentParser()
 
@@ -30,7 +27,7 @@ parser.add_argument('--golden_repo', dest='golden_repo', type=str,
                     help='Repository for golden repo')
 
 parser.add_argument('-b', '--benchmark_name', dest='benchmark_name', type=str,
-                    default="run_base_vit_8", help='Filename for log from TRIUMF')
+                    default="run_base_vit_8", help='Benchmark name')
 
 parser.add_argument('--log_filename', dest='triumf_log_filename', type=str,
                     default="TNF_July2024_Paolo_Neutron.csv", help='Filename for log from TRIUMF')
