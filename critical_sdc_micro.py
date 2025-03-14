@@ -33,6 +33,11 @@ args = parser.parse_args()
 LOGITS_REPO = args.logits_repo
 NEUTRON_COUNT_THRESHOLD = args.neutron_count_threshold
 
+exclude_timestamps_str = ["2024-07-28 13:00:00", "2024-07-28 14:00:00",
+                          "2024-07-28 15:00:00", "2024-07-28 16:00:00",
+                          "2024-07-28 17:00:00", "2024-07-28 17:00:00",
+                          "2024-07-29 16:00:00", "2024-07-30 07:00:00",
+                          "2024-07-30 08:00:00"]
 
 total_critical_sdcs = 0
 
@@ -77,15 +82,6 @@ def convert_to_timestamp(year, month, day, hour, minutes, seconds):
 def count_all_files(folder, rasp_id, benchmark_name, golden_arr):
     global total_critical_sdcs
 
-    exclude_timestamps_str = ["2024-07-28 13:00:00", "2024-07-28 14:00:00",
-                              "2024-07-28 15:00:00", "2024-07-28 16:00:00",
-                              "2024-07-30 06:00:00", "2024-07-30 07:00:00",
-                              "2024-07-30 08:00:00"]
-    exclude_timestamps = []
-
-    for timestamp in exclude_timestamps_str:
-        exclude_timestamps.append(timestamp)
-
     for filename in os.listdir(folder):
         filepath = os.path.join(folder, filename)
         if os.path.isfile(filepath) and benchmark_name in filename:
@@ -95,7 +91,7 @@ def count_all_files(folder, rasp_id, benchmark_name, golden_arr):
 
             hour_timestamp = convert_to_timestamp(year, month, day, hour, 0, 0)
 
-            if hour_timestamp in exclude_timestamps:
+            if hour_timestamp in exclude_timestamps_str:
                 continue
 
             total_critical_sdcs += count_critical_SDCs(filepath, int(img_id), golden_arr)

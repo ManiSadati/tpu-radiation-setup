@@ -126,7 +126,7 @@ def count_all_files(word, folder, acctime, sdc, rasp_id):
     rect2 = patches.Rectangle((39, 0), 3, 1440, linewidth=1, edgecolor='b', facecolor='r', alpha=0.5)
     ax.add_patch(rect2)
 
-    plt.savefig('neutron_count_noise_removal.pdf', bbox_inches='tight')
+    plt.savefig('graphs/neutron_count_noise_removal.pdf', bbox_inches='tight')
     #plt.show()
 
 

@@ -33,6 +33,12 @@ TRIUMF_LOG_REPO = args.triumf_log_repo
 TRIUMF_LOG_FILENAME = args.triumf_log_filename
 NEUTRON_COUNT_THRESHOLD = args.neutron_count_threshold
 
+exclude_timestamps_str = ["2024-07-28 13:00:00", "2024-07-28 14:00:00",
+                          "2024-07-28 15:00:00", "2024-07-28 16:00:00",
+                          "2024-07-28 17:00:00", "2024-07-28 17:00:00",
+                          "2024-07-29 16:00:00", "2024-07-30 07:00:00",
+                          "2024-07-30 08:00:00"]
+
 
 def count_SDCs(word, filename):
     count = 0
@@ -64,19 +70,34 @@ def convert_to_timestamp(year, month, day, hour, minutes, seconds):
     return f"{year}-{month}-{day} {hour}:{minutes:02d}:00"
 
 
-def count_all_files(word, folder, acctime, sdc, rasp_id):
-    triumf_dict = read_triumf_log()
+def compute_flux_values(neutron_count_dict, flux_values):
+    neutron_count_key = []
+    neutron_count_values = []
+
+    first_key_num_timestamps = 14
+    first_key = True
+
+    for timestamp in sorted(neutron_count_dict):
+        if timestamp in exclude_timestamps_str:
+            continue
+
+        neutron_count_key.append(timestamp)
+
+        avg_neutron_count_per_hour = neutron_count_dict[timestamp]/60
+
+        if first_key:
+            avg_neutron_count_per_hour = neutron_count_dict[timestamp]/first_key_num_timestamps
+            first_key = False
+
+        flux = 2000 * avg_neutron_count_per_hour * float(15496 / 13652)
+
+        neutron_count_values.append(avg_neutron_count_per_hour)
+        flux_values[timestamp] = flux
+
+
+def count_all_files(word, folder, triumf_dict, acctime, sdc, flux_values, timestamps_dict, rasp_id):
     minutes_in_hour = 60
     neutron_count_dict = {}
-
-    exclude_timestamps_str = ["2024-07-28 13:00:00", "2024-07-28 14:00:00",
-                              "2024-07-28 15:00:00", "2024-07-28 16:00:00",
-                              "2024-07-30 06:00:00", "2024-07-30 07:00:00",
-                              "2024-07-30 08:00:00"]
-    exclude_timestamps = []
-
-    for timestamp in exclude_timestamps_str:
-        exclude_timestamps.append(timestamp)
 
     for filename in os.listdir(folder):
         filepath = os.path.join(folder, filename)
@@ -100,7 +121,7 @@ def count_all_files(word, folder, acctime, sdc, rasp_id):
             hour_timestamp = convert_to_timestamp(year, month, day, hour, 0, 0)
             neutron_count_dict[hour_timestamp] = neutron_count_per_hour
 
-            if hour_timestamp in exclude_timestamps:
+            if hour_timestamp in exclude_timestamps_str:
                 continue
 
             benchmark = filename[20:].split('.')[0]
@@ -111,40 +132,52 @@ def count_all_files(word, folder, acctime, sdc, rasp_id):
             if benchmark in acctime:
                 acctime[benchmark].append(time)
                 sdc[benchmark].append(occurrences)
+                timestamps_dict[benchmark].append(hour_timestamp)
             else:
                 acctime[benchmark] = [time]
                 sdc[benchmark] = [occurrences]
+                timestamps_dict[benchmark] = [hour_timestamp]
+
+    compute_flux_values(neutron_count_dict, flux_values)
 
 
-    neutron_count_key = []
-    neutron_count_values = []
-    flux_values = []
+def calculate_fit(benchmark, acctime, sdc, flux_values, timestamps_dict, fluence_dict, cross_section_dict, fit_rates):
+    acctime_benchmark = acctime[benchmark]
+    sdc_benchmark = sdc[benchmark]
+    timestamps_list = timestamps_dict[benchmark]
 
-    first_key_num_timestamps = 14
-    first_key = True
+    fluence_sum = 0
+    cross_section = 0
+    fit_rate = 0
 
-    for timestamp in sorted(neutron_count_dict):
-        if timestamp in exclude_timestamps:
-            continue
+    for i, acctime_val in enumerate(acctime_benchmark):
+        timestamp = timestamps_list[i]
+        flux = flux_values[timestamp]
 
-        neutron_count_key.append(timestamp)
+        if acctime_val > 0:
+            fluence = acctime_val * float(flux)
+            fluence_sum += fluence
 
-        avg_neutron_count_per_hour = neutron_count_dict[timestamp]/60
+    if fluence_sum > 0:
+        sdc_count = sum(sdc_benchmark)
+        cross_section = float(sdc_count) / fluence_sum
+        fit_rate = cross_section * 13. * float(pow(10, 9))
 
-        if first_key:
-            avg_neutron_count_per_hour = neutron_count_dict[timestamp]/first_key_num_timestamps
-            first_key = False
-
-        flux = 2000 * avg_neutron_count_per_hour * float(15496 / 13652)
-
-        neutron_count_values.append(avg_neutron_count_per_hour)
-        flux_values.append(flux)
+    fluence_dict[benchmark] = fluence_sum
+    cross_section_dict[benchmark] = cross_section
+    fit_rates[benchmark] = fit_rate
 
 
 def main():
     acctime = {}
     sdc = {}
+    flux_values = {}
+    timestamps_dict = {}
     rasp_list = []
+
+    fluence_dict = {}
+    cross_section_dict = {}
+    fit_rates = {}
 
     if args.log_number == 1:
         rasp_list.append("")
@@ -153,16 +186,19 @@ def main():
     else:
         rasp_list = ["","2"]
 
+    triumf_dict = read_triumf_log()
 
     for rasp_id in rasp_list:
         folder_path = os.path.join(TRIUMF_LOG_REPO, "logs/rasp4-coral" + rasp_id)
         word_to_search = 'SDC'
 
-        count_all_files(word_to_search, folder_path, acctime, sdc, rasp_id)
+        count_all_files(word_to_search, folder_path, triumf_dict, acctime, sdc, flux_values, timestamps_dict, rasp_id)
+
+    for benchmark in sorted(acctime.keys()):
+        calculate_fit(benchmark, acctime, sdc, flux_values, timestamps_dict, fluence_dict, cross_section_dict, fit_rates)
 
     for v in sorted(acctime.keys()):
-        print("***",v, sum(acctime[v]), sum(sdc[v]))
-
+        print("***",v, sum(acctime[v]), sum(sdc[v]), fluence_dict[v], cross_section_dict[v], fit_rates[v])
 
 if __name__ == "__main__":
     main()
