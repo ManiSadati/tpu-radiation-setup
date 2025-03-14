@@ -1,0 +1,41 @@
+Benchmark,FIT_Rate,TPU,Type
+vit_base_16_edgetpu,205.6784274,1,SDC
+vit_base_8_edgetpu,45.6535682,1,SDC
+conv1k,34.38134047,1,SDC
+main_block_from_image_v16,53.81338015,1,SDC
+main_block_from_image_v8,21.05095616,1,SDC
+mha_from_image_v16,28.27094498,1,SDC
+mha_from_image_v8,14.72196128,1,SDC
+patch_encoding_v16,10.97018139,1,SDC
+patch_encoding_v8,7.873575124,1,SDC
+simple_conv1k,9.938267442,1,SDC
+vit_base_16_edgetpu,202.6198987,2,SDC
+vit_base_8_edgetpu,49.35973769,2,SDC
+conv1k,37.01799851,2,SDC
+main_block_from_image_v16,46.63315419,2,SDC
+main_block_from_image_v8,17.88740229,2,SDC
+mha_from_image_v16,23.88356714,2,SDC
+mha_from_image_v8,7.754947552,2,SDC
+patch_encoding_v16,8.124016477,2,SDC
+patch_encoding_v8,8.202050824,2,SDC
+simple_conv1k,16.75772647,2,SDC
+vit_base_16_edgetpu,12.45318603,1,Critical SDC
+vit_base_8_edgetpu,1.170604313,1,Critical SDC
+conv1k,,1,Critical SDC
+main_block_from_image_v16,4.639084496,1,Critical SDC
+main_block_from_image_v8,5.385128321,1,Critical SDC
+mha_from_image_v16,4.386870773,1,Critical SDC
+mha_from_image_v8,0,1,Critical SDC
+patch_encoding_v16,2.350753155,1,Critical SDC
+patch_encoding_v8,0,1,Critical SDC
+simple_conv1k,,1,Critical SDC
+vit_base_16_edgetpu,9.921124984,2,Critical SDC
+vit_base_8_edgetpu,2.407792082,2,Critical SDC
+conv1k,,2,Critical SDC
+main_block_from_image_v16,3.65750229,2,Critical SDC
+main_block_from_image_v8,6.924155726,2,Critical SDC
+mha_from_image_v16,4.153663851,2,Critical SDC
+mha_from_image_v8,0,2,Critical SDC
+patch_encoding_v16,2.538755149,2,Critical SDC
+patch_encoding_v8,1.367008471,2,Critical SDC
+simple_conv1k,,2,Critical SDC
